@@ -129,44 +129,7 @@
                 gi: "gi",
             };
 
-            // Bộ quy tắc mới
-            const newRules = [
-                { from: "a", to: "ge" },
-                { from: "i", to: "go" },
-                { from: "y", to: "xo" },
-                { from: "o", to: "fi" },
-                { from: "e", to: "a" },
-                { from: "u", to: "na" },
-                { from: "ai", to: "ta" },
-                { from: "ao", to: "li" },
-                { from: "au", to: "a" },
-                { from: "ay", to: "na" },
-                { from: "ia", to: "ta" },
-                { from: "eo", to: "xa" },
-                { from: "iu", to: "xon" },
-                { from: "oa", to: "ya" },
-                { from: "oe", to: "ma" },
-                { from: "oi", to: "ri" },
-                { from: "ua", to: "a" },
-                { from: "ui", to: "ju" },
-                { from: "oai", to: "li" },
-                { from: "oao", to: "a" },
-                { from: "uao", to: "o" },
-                { from: "oeo", to: "li" },
-                { from: "uyu", to: "vi" },
-                { from: "oay", to: "a" },
-                { from: "b", to: "e" },
-                { from: "d", to: "le" },
-                { from: "p", to: "na" },
-                { from: "r", to: "li" },
-                { from: "l", to: "ly" },
-                { from: "m", to: "la" },
-                { from: "n", to: "lau" },
-                { from: "v", to: "ra" },
-                { from: "ng", to: "no" },
-                { from: "gi", to: "a" },
-            ];
-
+            // Hàm loại bỏ dấu sắc, huyền, hỏi, ngã, nặng nhưng giữ nguyên dấu mũ và ký tự 'đ'
             function removeDiacritics(str) {
                 const accentsMap = [
                     { base: "a", letters: /[áàảãạ]/g },
@@ -181,6 +144,7 @@
                     { base: "u", letters: /[úùủũụ]/g },
                     { base: "ư", letters: /[ứừửữự]/g },
                     { base: "y", letters: /[ýỳỷỹỵ]/g },
+                    // Đã loại bỏ quy tắc chuyển đổi 'đ' thành 'd'
                 ];
                 accentsMap.forEach((accent) => {
                     str = str.replace(accent.letters, accent.base);
@@ -199,43 +163,40 @@
                 let i = 0;
                 while (i < wordWithoutDiacritics.length) {
                     let found = false;
-                    let longestMatch = "";
-                    let longestMatchConverted = "";
 
-                    // Tìm chuỗi khớp dài nhất
-                    for (let j = wordWithoutDiacritics.length; j > i; j--) {
-                        const substring = wordWithoutDiacritics.slice(i, j);
-                        if (conversionRules[substring]) {
-                            longestMatch = substring;
-                            longestMatchConverted = conversionRules[substring];
+                    // Kiểm tra các nguyên âm ba
+                    if (i + 2 < wordWithoutDiacritics.length) {
+                        const threeChars = wordWithoutDiacritics.slice(
+                            i,
+                            i + 3
+                        );
+                        if (conversionRules[threeChars]) {
+                            originalWord += threeChars + " ";
+                            convertedWord += conversionRules[threeChars] + " ";
+                            i += 3;
                             found = true;
-                            break;
                         }
                     }
 
-                    if (found) {
-                        originalWord += longestMatch + " ";
-                        convertedWord += longestMatchConverted + " ";
-                        i += longestMatch.length;
-                    } else {
-                        // Nếu không tìm thấy, giữ nguyên ký tự
-                        originalWord += wordWithoutDiacritics[i] + " ";
-                        convertedWord += wordWithoutDiacritics[i] + " ";
-                        i++;
+                    // Kiểm tra các phụ âm ghép và nguyên âm đôi
+                    if (!found && i + 1 < wordWithoutDiacritics.length) {
+                        const twoChars =
+                            wordWithoutDiacritics[i] +
+                            wordWithoutDiacritics[i + 1];
+                        if (conversionRules[twoChars]) {
+                            originalWord += twoChars + " ";
+                            convertedWord += conversionRules[twoChars] + " ";
+                            i += 2;
+                            found = true;
+                        }
                     }
-                }
 
-                // Kiểm tra xem có thể áp dụng quy tắc đặc biệt không
-                const parts = originalWord.trim().split(" ");
-                if (parts.length === 2) {
-                    const combinedParts = parts.join("");
-                    const newRule = newRules.find(
-                        (rule) => rule.from === combinedParts
-                    );
-                    if (newRule) {
-                        convertedWord = newRule.to + " ";
-                    } else if (parts[0] === "m" && parts[1] === "ua") {
-                        convertedWord = "laa ";
+                    // Kiểm tra từng ký tự đơn
+                    if (!found) {
+                        const char = wordWithoutDiacritics[i];
+                        originalWord += char + " ";
+                        convertedWord += conversionRules[char] || char + " "; // Giữ nguyên ký tự nếu không tìm thấy trong rules
+                        i++;
                     }
                 }
 
