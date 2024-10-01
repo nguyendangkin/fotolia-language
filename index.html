@@ -129,7 +129,7 @@
                 gi: "gi",
             };
 
-            // Hàm loại bỏ dấu sắc, huyền, hỏi, ngã, nặng nhưng giữ nguyên dấu mũ
+            // Hàm loại bỏ dấu sắc, huyền, hỏi, ngã, nặng nhưng giữ nguyên dấu mũ và ký tự 'đ'
             function removeDiacritics(str) {
                 const accentsMap = [
                     { base: "a", letters: /[áàảãạ]/g },
@@ -144,7 +144,7 @@
                     { base: "u", letters: /[úùủũụ]/g },
                     { base: "ư", letters: /[ứừửữự]/g },
                     { base: "y", letters: /[ýỳỷỹỵ]/g },
-                    { base: "d", letters: /[đ]/g },
+                    // Đã loại bỏ quy tắc chuyển đổi 'đ' thành 'd'
                 ];
                 accentsMap.forEach((accent) => {
                     str = str.replace(accent.letters, accent.base);
