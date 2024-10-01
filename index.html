@@ -171,8 +171,8 @@
                             i + 3
                         );
                         if (conversionRules[threeChars]) {
-                            originalWord += threeChars + " ";
-                            convertedWord += conversionRules[threeChars] + " ";
+                            originalWord += threeChars + " "; // Giữ nguyên khoảng trắng
+                            convertedWord += conversionRules[threeChars]; // Bỏ khoảng trắng
                             i += 3;
                             found = true;
                         }
@@ -184,8 +184,8 @@
                             wordWithoutDiacritics[i] +
                             wordWithoutDiacritics[i + 1];
                         if (conversionRules[twoChars]) {
-                            originalWord += twoChars + " ";
-                            convertedWord += conversionRules[twoChars] + " ";
+                            originalWord += twoChars + " "; // Giữ nguyên khoảng trắng
+                            convertedWord += conversionRules[twoChars]; // Bỏ khoảng trắng
                             i += 2;
                             found = true;
                         }
@@ -194,8 +194,8 @@
                     // Kiểm tra từng ký tự đơn
                     if (!found) {
                         const char = wordWithoutDiacritics[i];
-                        originalWord += char + " ";
-                        convertedWord += conversionRules[char] || char + " "; // Giữ nguyên ký tự nếu không tìm thấy trong rules
+                        originalWord += char + " "; // Giữ nguyên khoảng trắng
+                        convertedWord += conversionRules[char] || char; // Bỏ khoảng trắng
                         i++;
                     }
                 }
