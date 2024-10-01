@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Phân tích và Chuyển đổi Nguyên âm, Phụ âm</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+            input,
+            button {
+                padding: 10px;
+                margin: 5px;
+                font-size: 16px;
+            }
+            .result {
+                margin-top: 20px;
+                display: flex;
+            }
+            .column {
+                flex: 1;
+                padding: 10px;
+            }
+            .column p {
+                margin: 5px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Phân tích và Chuyển đổi Nguyên âm, Phụ âm</h1>
+
+        <input type="text" id="inputWord" placeholder="Nhập từ vào" />
+        <button onclick="analyze()">Chuyển đổi</button>
+
+        <div class="result">
+            <div class="column">
+                <h3>Từ gốc (Tách ra)</h3>
+                <div id="originalWord"></div>
+            </div>
+            <div class="column">
+                <h3>Từ chuyển đổi</h3>
+                <div id="convertedWord"></div>
+            </div>
+        </div>
+
+        <script>
+            const conversionRules = {
+                a: "a",
+                ă: "ta",
+                â: "ti",
+                i: "i",
+                y: "y",
+                o: "o",
+                ô: "tu",
+                ơ: "te",
+                e: "e",
+                ê: "to",
+                u: "u",
+                ư: "da",
+                ai: "ai",
+                ao: "ao",
+                au: "au",
+                ay: "ay",
+                âu: "ra",
+                ây: "ri",
+                ia: "ia",
+                iê: "ru",
+                yê: "re",
+                êu: "ro",
+                eo: "eo",
+                iu: "iu",
+                oa: "oa",
+                oe: "oe",
+                oă: "ka",
+                oi: "oi",
+                ôi: "ki",
+                ơi: "ku",
+                ua: "ua",
+                uâ: "ke",
+                uă: "ko",
+                ui: "ui",
+                ưi: "ga",
+                uo: "uo",
+                ươ: "gi",
+                ưu: "gu",
+                uy: "uy",
+                oai: "oai",
+                oao: "oao",
+                uao: "uao",
+                oeo: "oeo",
+                iêu: "sha",
+                yêu: "shi",
+                uôi: "shu",
+                ươu: "she",
+                uyu: "uyu",
+                uyê: "sho",
+                oay: "oay",
+                uây: "nya",
+                ươi: "nyo",
+                b: "b",
+                c: "hi",
+                d: "d",
+                đ: "hu",
+                g: "he",
+                p: "p",
+                q: "ho",
+                r: "r",
+                h: "zo",
+                k: "za",
+                l: "l",
+                m: "m",
+                n: "n",
+                s: "zi",
+                t: "zu",
+                v: "v",
+                x: "ze",
+                ch: "kya",
+                gh: "ha",
+                ng: "ng",
+                tr: "fu",
+                qu: "kyo",
+                ph: "cha",
+                th: "chi",
+                nh: "chu",
+                ngh: "che",
+                kh: "cho",
+                gi: "gi",
+            };
+
+            // Hàm loại bỏ dấu sắc, huyền, hỏi, ngã, nặng nhưng giữ nguyên dấu mũ
+            function removeDiacritics(str) {
+                const accentsMap = [
+                    { base: "a", letters: /[áàảãạ]/g },
+                    { base: "â", letters: /[ấầẩẫậ]/g },
+                    { base: "ă", letters: /[ắằẳẵặ]/g },
+                    { base: "e", letters: /[éèẻẽẹ]/g },
+                    { base: "ê", letters: /[ếềểễệ]/g },
+                    { base: "i", letters: /[íìỉĩị]/g },
+                    { base: "o", letters: /[óòỏõọ]/g },
+                    { base: "ô", letters: /[ốồổỗộ]/g },
+                    { base: "ơ", letters: /[ớờởỡợ]/g },
+                    { base: "u", letters: /[úùủũụ]/g },
+                    { base: "ư", letters: /[ứừửữự]/g },
+                    { base: "y", letters: /[ýỳỷỹỵ]/g },
+                    { base: "d", letters: /[đ]/g },
+                ];
+                accentsMap.forEach((accent) => {
+                    str = str.replace(accent.letters, accent.base);
+                });
+                return str;
+            }
+
+            function analyze() {
+                const inputWord = document
+                    .getElementById("inputWord")
+                    .value.toLowerCase();
+                const wordWithoutDiacritics = removeDiacritics(inputWord);
+                let originalWord = "";
+                let convertedWord = "";
+
+                let i = 0;
+                while (i < wordWithoutDiacritics.length) {
+                    let found = false;
+
+                    // Kiểm tra các nguyên âm ba
+                    if (i + 2 < wordWithoutDiacritics.length) {
+                        const threeChars = wordWithoutDiacritics.slice(
+                            i,
+                            i + 3
+                        );
+                        if (conversionRules[threeChars]) {
+                            originalWord += threeChars + " ";
+                            convertedWord += conversionRules[threeChars] + " ";
+                            i += 3;
+                            found = true;
+                        }
+                    }
+
+                    // Kiểm tra các phụ âm ghép và nguyên âm đôi
+                    if (!found && i + 1 < wordWithoutDiacritics.length) {
+                        const twoChars =
+                            wordWithoutDiacritics[i] +
+                            wordWithoutDiacritics[i + 1];
+                        if (conversionRules[twoChars]) {
+                            originalWord += twoChars + " ";
+                            convertedWord += conversionRules[twoChars] + " ";
+                            i += 2;
+                            found = true;
+                        }
+                    }
+
+                    // Kiểm tra từng ký tự đơn
+                    if (!found) {
+                        const char = wordWithoutDiacritics[i];
+                        originalWord += char + " ";
+                        convertedWord += conversionRules[char] || char + " "; // Giữ nguyên ký tự nếu không tìm thấy trong rules
+                        i++;
+                    }
+                }
+
+                document.getElementById("originalWord").innerText =
+                    originalWord.trim();
+                document.getElementById("convertedWord").innerText =
+                    convertedWord.trim();
+            }
+        </script>
+    </body>
+</html>
